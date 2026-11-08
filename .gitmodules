@@ -1,0 +1,3 @@
+[submodule "external/mmio"]
+	path = external/mmio
+	url = https://github.com/ajackson2681/mmio.git
