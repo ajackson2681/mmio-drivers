@@ -27,15 +27,33 @@ namespace MMIO::Chips::AnalogDevices::DS3231
         ControlStatus,
         AgingOffset,
         MSBTemp,
-        LSBTemp
+        LSBTemp,
+        NumRegisters
     };
 
-    struct Seconds
+    // used in seconds and minutes. Hours has adifferent
+    // tens and twenties format. Ones is still used
+    struct Timing
     {
-        static constexpr Field<ReadWrite, 3, 0> SecondsOnes{};
-        static constexpr Field<ReadWrite, 6, 4> SecondsOnes{};
+        static constexpr Field<ReadWrite, 3, 0> Ones{};
+        static constexpr Field<ReadWrite, 6, 4> Tens{};
     };
-    
+
+    // 
+    struct Hours
+    {
+        static constexpr Field<ReadWrite, 4> Ten{};
+        static constexpr Field<ReadWrite, 5> PM{};
+        static constexpr Field<ReadWrite, 5> Twenty{};
+        static constexpr Field<ReadWrite, 6> TimeFormat{};
+    };
+
+    enum TimeFormat
+    {
+        Hour24,
+        Hour12
+    };
+
     class DS3231 : public I2CChip
     {
     public:
@@ -43,6 +61,13 @@ namespace MMIO::Chips::AnalogDevices::DS3231
 
         DS3231();
 
-        Register<uint8_t> regs[0x12];
+        bool SetSeconds(uint8_t seconds);
+        bool SetMinutes(uint8_t minutes);
+        bool SetHours(uint8_t hours);
+        bool SetTime(uint8_t seconds, uint8_t minutes, uint8_t hours);
+        bool SetTimeFormat(TimeFormat format);
+        bool ReadTime();
+
+        Register<uint8_t> regs[NumRegisters];
     };
 };
